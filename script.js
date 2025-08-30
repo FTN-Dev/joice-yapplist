@@ -17,7 +17,7 @@ let isOpen = false;
 
 // Toggle dropdown saat header diklik
 dropdownHeader.addEventListener('click', (e) => {
-  e.stopPropagation(); // Cegah event bubbling
+  e.stopPropagation();
   isOpen = !isOpen;
   dropdownList.classList.toggle('active', isOpen);
   dropdownHeader.querySelector('.arrow').style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
@@ -25,23 +25,20 @@ dropdownHeader.addEventListener('click', (e) => {
 
 // Pilih prioritas dari list
 dropdownList.addEventListener('click', (e) => {
-  const target = e.target.closest('li'); // Ambil <li> terdekat
+  const target = e.target.closest('li');
   if (!target) return;
 
   const value = target.getAttribute('data-value');
   const icon = target.querySelector('.icon').textContent;
 
-  // Update tampilan dropdown
   dropdownIcon.textContent = icon;
   dropdownText.textContent = value;
   hiddenPriorityInput.value = value;
 
-  // Tutup dropdown
   isOpen = false;
   dropdownList.classList.remove('active');
   dropdownHeader.querySelector('.arrow').style.transform = 'rotate(0deg)';
 
-  // Update kelas aktif
   dropdownList.querySelectorAll('li').forEach(li => li.classList.remove('active'));
   target.classList.add('active');
 });
@@ -78,7 +75,7 @@ todoForm.addEventListener('submit', function (e) {
   renderTasks();
   todoForm.reset();
 
-  // Reset dropdown ke Low secara visual
+  // Reset dropdown ke Low
   dropdownIcon.textContent = '🟢';
   dropdownText.textContent = 'Low';
   hiddenPriorityInput.value = 'Low';
@@ -109,7 +106,6 @@ function renderTasks() {
     taskList.appendChild(li);
   });
 
-  // Event listener untuk tombol hapus
   document.querySelectorAll('.delete-btn').forEach(button => {
     button.addEventListener('click', function () {
       const taskId = Number(this.getAttribute('data-id'));
@@ -119,12 +115,11 @@ function renderTasks() {
   });
 }
 
-// Inisialisasi: set default active item di dropdown
+// Inisialisasi dropdown
 document.addEventListener('DOMContentLoaded', () => {
   const defaultItem = dropdownList.querySelector('li[data-value="Low"]');
   defaultItem.classList.add('active');
 });
-
 
 // =============== TAB & SWIPE NAVIGATION ===============
 const tabsWrapper = document.getElementById('tabsWrapper');
@@ -133,12 +128,10 @@ const navForm = document.getElementById('navForm');
 let isDragging = false;
 let startX, startTranslateX = 0;
 
-// Fungsi pindah tab
 function goToTab(tabIndex) {
-  startTranslateX = -tabIndex * 50; // 50% lebar layar
+  startTranslateX = -tabIndex * 50;
   tabsWrapper.style.transform = `translateX(${startTranslateX}%)`;
 
-  // Update navigasi
   if (tabIndex === 0) {
     navList.classList.add('nav-active');
     navForm.classList.remove('nav-active');
@@ -148,11 +141,9 @@ function goToTab(tabIndex) {
   }
 }
 
-// Event: Klik navigasi bawah
 navList.addEventListener('click', () => goToTab(0));
 navForm.addEventListener('click', () => goToTab(1));
 
-// Swipe Detection
 tabsWrapper.addEventListener('touchstart', (e) => {
   isDragging = true;
   startX = e.touches[0].clientX;
@@ -165,7 +156,6 @@ tabsWrapper.addEventListener('touchmove', (e) => {
   const movePercent = (diff / window.innerWidth) * 100;
   const translateX = startTranslateX + movePercent;
 
-  // Hanya geser jika di batas
   if ((startTranslateX === 0 && diff < 0) || (startTranslateX === -50 && diff > 0)) {
     tabsWrapper.style.transform = `translateX(${translateX}%)`;
   }
@@ -175,18 +165,18 @@ tabsWrapper.addEventListener('touchend', () => {
   if (!isDragging) return;
   isDragging = false;
 
-  const currentX = startTranslateX * -1; // 0 atau 50
+  const currentX = startTranslateX * -1;
   const endX = tabsWrapper.getBoundingClientRect().x;
+  const threshold = 15;
 
-  // Jika geser cukup jauh (>30%), pindah tab
-  if (currentX === 0 && endX < -15) {
-    goToTab(1); // ke Buat
-  } else if (currentX === 50 && endX > -window.innerWidth * 0.35) {
-    goToTab(0); // ke Daftar
+  if (currentX === 0 && endX < -threshold) {
+    goToTab(1);
+  } else if (currentX === 50 && endX > -window.innerWidth + threshold) {
+    goToTab(0);
   } else {
-    goToTab(currentX === 0 ? 0 : 1); // kembali ke posisi semula
+    goToTab(currentX === 0 ? 0 : 1);
   }
 });
 
-// Inisialisasi: default ke tab Daftar
+// Default ke tab "Buat"
 goToTab(1);
