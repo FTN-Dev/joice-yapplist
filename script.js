@@ -121,62 +121,67 @@ document.addEventListener('DOMContentLoaded', () => {
   defaultItem.classList.add('active');
 });
 
-// =============== TAB & SWIPE NAVIGATION ===============
-const tabsWrapper = document.getElementById('tabsWrapper');
+// =============== TAB NAVIGATION (FIXED: no transform, no jump) ===============
+const listTab = document.getElementById('listTab');
+const formTab = document.getElementById('formTab');
 const navList = document.getElementById('navList');
 const navForm = document.getElementById('navForm');
-let isDragging = false;
-let startX, startTranslateX = 0;
 
 function goToTab(tabIndex) {
-  startTranslateX = -tabIndex * 50;
-  tabsWrapper.style.transform = `translateX(${startTranslateX}%)`;
+  // Sembunyikan semua tab
+  listTab.classList.remove('active');
+  formTab.classList.remove('active');
 
+  // Aktifkan tab yang dipilih
   if (tabIndex === 0) {
+    listTab.classList.add('active');
     navList.classList.add('nav-active');
     navForm.classList.remove('nav-active');
   } else {
+    formTab.classList.add('active');
     navList.classList.remove('nav-active');
     navForm.classList.add('nav-active');
   }
 }
 
+// Klik tombol bawah
 navList.addEventListener('click', () => goToTab(0));
 navForm.addEventListener('click', () => goToTab(1));
 
-tabsWrapper.addEventListener('touchstart', (e) => {
-  isDragging = true;
-  startX = e.touches[0].clientX;
-}, { passive: true });
+// Swipe Detection (optional, tapi tidak ganggu textarea)
+let isDragging = false;
+let startX = 0;
+let currentTab = 1; // default ke "Buat"
 
-tabsWrapper.addEventListener('touchmove', (e) => {
-  if (!isDragging) return;
-  const currentX = e.touches[0].clientX;
-  const diff = currentX - startX;
-  const movePercent = (diff / window.innerWidth) * 100;
-  const translateX = startTranslateX + movePercent;
-
-  if ((startTranslateX === 0 && diff < 0) || (startTranslateX === -50 && diff > 0)) {
-    tabsWrapper.style.transform = `translateX(${translateX}%)`;
+document.addEventListener('touchstart', (e) => {
+  if (e.target.closest('.tab') || e.target.closest('form')) {
+    isDragging = true;
+    startX = e.touches[0].clientX;
   }
 }, { passive: true });
 
-tabsWrapper.addEventListener('touchend', () => {
+document.addEventListener('touchmove', (e) => {
+  if (!isDragging) return;
+  e.preventDefault(); // Cegah scroll saat swipe
+}, { passive: false });
+
+document.addEventListener('touchend', (e) => {
   if (!isDragging) return;
   isDragging = false;
 
-  const currentX = startTranslateX * -1;
-  const endX = tabsWrapper.getBoundingClientRect().x;
-  const threshold = 15;
+  const endX = e.changedTouches[0].clientX;
+  const diff = startX - endX;
 
-  if (currentX === 0 && endX < -threshold) {
-    goToTab(1);
-  } else if (currentX === 50 && endX > -window.innerWidth + threshold) {
+  const threshold = 50;
+
+  if (diff > threshold && currentTab === 1) {
     goToTab(0);
-  } else {
-    goToTab(currentX === 0 ? 0 : 1);
+    currentTab = 0;
+  } else if (diff < -threshold && currentTab === 0) {
+    goToTab(1);
+    currentTab = 1;
   }
 });
 
-// Default ke tab "Buat"
+// Inisialisasi: default ke tab "Buat"
 goToTab(1);
