@@ -19,7 +19,7 @@ body {
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  min-height: calc(100dvh - 80px); /* ✅ Dynamic viewport height */
+  min-height: calc(100dvh - 80px);
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -155,36 +155,29 @@ button:hover {
   background-color: #2980b9;
 }
 
-/* Tab System - Horizontal Swipe */
+/* Tab System - Sekarang pakai display block/none */
 .tabs-container {
   overflow: hidden;
   width: 100%;
   flex: 1;
   position: relative;
   height: 100%;
-  min-height: 0; /* Cegah flex overflow */
-}
-
-.tabs-wrapper {
-  display: flex;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform;
-  width: 200%;
-  transform: translateX(0);
-  height: 100%;
-  touch-action: pan-y;
-  min-height: 1px; /* Cegah collapse */
 }
 
 .tab {
-  width: 50%;
+  width: 100%;
   padding: 0 10px;
   box-sizing: border-box;
   height: 100%;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  min-height: 0; /* Penting untuk flex child */
+  min-height: 0;
+}
+
+/* Sembunyikan tab yang tidak aktif */
+.tab:not(.active) {
+  display: none;
 }
 
 /* Bottom Navigation */
@@ -226,7 +219,7 @@ button:hover {
 .todo-list {
   flex: 1;
   overflow-y: auto;
-  max-height: calc(100dvh - 200px); /* Gunakan dvh */
+  max-height: calc(100dvh - 200px);
   padding-right: 5px;
 } 
 
