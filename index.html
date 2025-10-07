@@ -1,39 +1,76 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Joice's Yapp List</title>
   <link rel="stylesheet" href="style.css" />
+  <!-- Supabase JS (UMD) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h1>Joice's Yapp List</h1>
+  <!-- AUTH (login/register) -->
+  <div id="authContainer" class="auth-wrap">
+    <div class="auth-card">
+      <h2>Masuk / Daftar — Yapp List</h2>
+
+      <form id="loginForm" class="auth-form">
+        <input id="email" type="email" placeholder="Email" required />
+        <input id="password" type="password" placeholder="Password" required minlength="6" />
+        <button type="submit">Masuk</button>
+      </form>
+
+      <form id="registerForm" class="auth-form hidden">
+        <input id="regEmail" type="email" placeholder="Email" required />
+        <input id="regPassword" type="password" placeholder="Password (min 6)" required minlength="6" />
+        <button type="submit">Daftar</button>
+      </form>
+
+      <p class="muted">
+        <span id="authToggleText">Belum punya akun?</span>
+        <a href="#" id="toggleAuthLink">Daftar</a>
+      </p>
+
+      <p id="authMsg" class="muted"></p>
+    </div>
+  </div>
+
+  <!-- MAIN APP (hidden until login) -->
+  <div id="mainContainer" class="container" style="display:none;">
+    <header class="app-header">
+      <div>
+        <h1>Joice's Yapp List</h1>
+        <p id="userEmail" class="muted small"></p>
+      </div>
+      <div class="header-actions">
+        <button id="btnSignOut" class="btn-ghost">Keluar</button>
+      </div>
+    </header>
 
     <!-- Tab Container -->
-    <div class="tabs-container">
-      <!-- Tab Content -->
-      <div class="tabs-wrapper" id="tabsWrapper">
-        <!-- Tab 1: Daftar Yapp -->
-        <div class="tab" id="listTab">
+    <main class="tabs-area">
+      <div class="tabs-wrapper">
+        <!-- Tab: Daftar -->
+        <section class="tab active" id="listTab">
           <div class="todo-list">
             <h2>Daftar Yapp</h2>
-            <ul id="taskList"></ul>
+            <ul id="taskList" class="task-list"></ul>
+            <div id="emptyState" class="muted">Belum ada topik. Tambah topik di tab "Buat".</div>
           </div>
-        </div>
+        </section>
 
-        <!-- Tab 2: Buat Topik -->
-        <div class="tab" id="formTab">
-          <form id="todoForm">
-            <div class="form-group">
+        <!-- Tab: Buat -->
+        <section class="tab" id="formTab">
+          <form id="todoForm" class="todo-form">
+            <div class="form-row">
               <label for="title">Topik Yapp:</label>
               <input type="text" id="title" placeholder="Masukkan judul topik" required />
             </div>
 
-            <div class="form-group">
+            <div class="form-row">
               <label for="priority">Prioritas:</label>
               <div class="custom-dropdown" id="priorityDropdown">
-                <div class="dropdown-header">
+                <div class="dropdown-header" id="dropdownHeader">
                   <span class="icon" id="dropdownIcon">🟢</span>
                   <span id="dropdownText">Low</span>
                   <span class="arrow">▼</span>
@@ -47,27 +84,29 @@
               <input type="hidden" id="priority" value="Low">
             </div>
 
-            <div class="form-group">
+            <div class="form-row">
               <label for="notes">Catatan:</label>
               <textarea id="notes" placeholder="Pembahasan subtopik, sumber, dll."></textarea>
             </div>
 
-            <div class="form-group">
+            <div class="form-row">
               <label for="assigner">Pembuat:</label>
               <input type="text" id="assigner" placeholder="Nama Pembuat Topik" required />
             </div>
 
-            <button type="submit">Tambah Topik</button>
+            <div class="form-row">
+              <button type="submit" class="btn-primary">Tambah Topik</button>
+            </div>
           </form>
-        </div>
+        </section>
       </div>
-    </div>
+    </main>
 
     <!-- Bottom Navigation -->
-    <div class="bottom-nav">
+    <nav class="bottom-nav">
       <button id="navList" class="nav-active">📚 Daftar</button>
       <button id="navForm">✍️ Buat</button>
-    </div>
+    </nav>
   </div>
 
   <script src="script.js"></script>
