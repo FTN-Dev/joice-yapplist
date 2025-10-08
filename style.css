@@ -1,53 +1,40 @@
-:root {
-  --vh: 1vh;
-}
-
-html, body {
-  margin: 0;
-  padding: 0;
-  height: calc(var(--vh, 1vh) * 100);
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  background-color: #0a0f1a;
-}
-
-main, .task-container {
-  padding-top: env(safe-area-inset-top, 30px);
-  box-sizing: border-box;
-}
-
-body::before {
-  content: '';
-  display: block;
-  height: env(safe-area-inset-top, 20px);
-}
-
-/* ============================== */
-
 /* ======= FIX SAFE AREA UNTUK HP ======= */
 
 html, body {
-  height: 100%;
   margin: 0;
   padding: 0;
+  background-color: #0a0f1a;
   overflow-x: hidden;
-  background: #f9fafb;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  height: 100%;
 }
 
+/* Gunakan nilai tinggi dinamis dari JS */
 .container, .auth-wrap, .tabs-area {
-  min-height: 100vh;
-  min-height: 100dvh;
+  min-height: calc(var(--vh, 1vh) * 100);
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+/* Header & bottom nav aman di safe area */
 .app-header {
   padding-top: calc(1rem + env(safe-area-inset-top));
 }
 
 .bottom-nav {
   padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+}
+
+/* Pastikan konten tidak tertimpa */
+.tabs-area {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 
