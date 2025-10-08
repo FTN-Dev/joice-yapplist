@@ -1,4 +1,4 @@
-/* :root {
+:root {
   --vh: 1vh;
 }
 
@@ -20,13 +20,13 @@ body::before {
   content: '';
   display: block;
   height: env(safe-area-inset-top, 20px);
-} */
+}
 
 /* ============================== */
 
 /* ======= FIX SAFE AREA UNTUK HP ======= */
 
-/* html, body {
+html, body {
   height: 100%;
   margin: 0;
   padding: 0;
@@ -48,7 +48,7 @@ body::before {
 
 .bottom-nav {
   padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
-} */
+}
 
 
 /* =================================== */
