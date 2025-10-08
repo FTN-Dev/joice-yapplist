@@ -309,3 +309,48 @@ navList.addEventListener('click', () => goToTab(0));
 navForm.addEventListener('click', () => goToTab(1));
 
 goToTab(0);
+
+// ----------------- PWA + NOTIFIKASI REALTIME -----------------
+
+// Minta izin notifikasi saat user login
+async function requestNotificationPermission() {
+  if (Notification.permission === "granted") return;
+  const result = await Notification.requestPermission();
+  if (result !== "granted") {
+    console.warn("Izin notifikasi ditolak oleh user");
+  }
+}
+
+// Panggil setelah login sukses
+supabase.auth.onAuthStateChange((event, session) => {
+  if (session?.user) {
+    currentUser = session.user;
+    showMain(session.user);
+    requestNotificationPermission();
+    setupRealtimeNotifications(); // 👈 tambahkan listener realtime di sini
+  } else {
+    currentUser = null;
+    showAuth();
+  }
+});
+
+// Setup Realtime Supabase Listener
+function setupRealtimeNotifications() {
+  console.log("📡 Listening for realtime task inserts...");
+  supabase
+    .channel("yapp_realtime")
+    .on(
+      "postgres_changes",
+      { event: "INSERT", schema: "public", table: "yapp_tasks" },
+      (payload) => {
+        console.log("🆕 New task detected:", payload.new);
+        if (navigator.serviceWorker?.controller) {
+          navigator.serviceWorker.controller.postMessage({
+            type: "NEW_TASK",
+            payload: payload.new
+          });
+        }
+      }
+    )
+    .subscribe();
+}
