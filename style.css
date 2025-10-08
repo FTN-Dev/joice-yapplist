@@ -1,5 +1,5 @@
-:root {
-  --vh: 1vh; /* fallback default */
+/* :root {
+  --vh: 1vh;
 }
 
 html, body {
@@ -8,7 +8,7 @@ html, body {
   height: calc(var(--vh, 1vh) * 100);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  background-color: #0a0f1a; /* ganti sesuai warna latarmu */
+  background-color: #0a0f1a;
 }
 
 main, .task-container {
@@ -20,14 +20,13 @@ body::before {
   content: '';
   display: block;
   height: env(safe-area-inset-top, 20px);
-}
+} */
 
 /* ============================== */
 
 /* ======= FIX SAFE AREA UNTUK HP ======= */
 
-/* Pastikan body dan html penuh layar */
-html, body {
+/* html, body {
   height: 100%;
   margin: 0;
   padding: 0;
@@ -35,24 +34,21 @@ html, body {
   background: #f9fafb;
 }
 
-/* Gunakan viewport height yang aman untuk mobile */
 .container, .auth-wrap, .tabs-area {
   min-height: 100vh;
-  min-height: 100dvh; /* dukungan browser modern */
+  min-height: 100dvh;
   box-sizing: border-box;
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* Header tidak nempel ke pinggir layar */
 .app-header {
   padding-top: calc(1rem + env(safe-area-inset-top));
 }
 
-/* Navigasi bawah agar tidak ketutup area gesture */
 .bottom-nav {
   padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
-}
+} */
 
 
 /* =================================== */
