@@ -10,18 +10,18 @@ html, body {
   height: 100%;
 }
 
-/* Gunakan nilai tinggi dinamis dari JS */
-.container, .auth-wrap, .tabs-area {
+/* hanya bagian utama yang disesuaikan dengan viewport */
+#mainContainer {
   min-height: calc(var(--vh, 1vh) * 100);
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  box-sizing: border-box;
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* Header & bottom nav aman di safe area */
+/* header dan nav ikut safe-area */
 .app-header {
   padding-top: calc(1rem + env(safe-area-inset-top));
 }
@@ -30,12 +30,13 @@ html, body {
   padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
 }
 
-/* Pastikan konten tidak tertimpa */
+/* biar isi tab tetap fleksibel dan tidak memanjang */
 .tabs-area {
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
+
 
 
 /* =================================== */
