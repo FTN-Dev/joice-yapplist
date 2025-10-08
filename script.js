@@ -28,7 +28,6 @@ function updateViewportHeight() {
   document.documentElement.style.setProperty('--vh', `${vh}px`);
 }
 
-// Jalankan saat load dan setiap perubahan ukuran
 window.addEventListener('resize', updateViewportHeight);
 window.addEventListener('orientationchange', updateViewportHeight);
 window.addEventListener('load', updateViewportHeight);
