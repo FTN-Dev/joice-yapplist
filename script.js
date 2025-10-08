@@ -22,13 +22,16 @@ const formTab = document.getElementById('formTab');
 const navList = document.getElementById('navList');
 const navForm = document.getElementById('navForm');
 
-// === Fix 100vh issue on mobile browsers ===
-function fixMobileHeight() {
-  document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+// === FIX VIEWPORT HEIGHT ISSUE ON MOBILE ===
+function updateViewportHeight() {
+  const vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
 }
-window.addEventListener('resize', fixMobileHeight);
-window.addEventListener('orientationchange', fixMobileHeight);
-fixMobileHeight();
+
+window.addEventListener('resize', updateViewportHeight);
+window.addEventListener('orientationchange', updateViewportHeight);
+window.addEventListener('load', updateViewportHeight);
+updateViewportHeight();
 
 // Dropdown
 const dropdown = document.getElementById('priorityDropdown');

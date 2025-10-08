@@ -1,3 +1,23 @@
+:root {
+  --vh: 1vh; /* fallback default */
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: calc(var(--vh, 1vh) * 100);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background-color: #0a0f1a; /* ganti sesuai warna latarmu */
+}
+
+main, .task-container {
+  padding-top: env(safe-area-inset-top, 30px);
+  box-sizing: border-box;
+}
+
+/* ============================== */
+
 :root{
   --bg: #0f1724;
   --card: #0b1220;
@@ -115,25 +135,4 @@ body{
   body{padding:16px}
   .custom-dropdown{width:120px}
   .auth-card{padding:16px}
-}
-
-/* ==== FIX VIEWPORT MOBILE CHROME ==== */
-:root {
-  --vh: 100%;
-}
-
-body {
-  height: calc(var(--vh, 1vh) * 100);
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-html, body {
-  margin: 0;
-  padding: 0;
-}
-
-/* Tambahan untuk mencegah elemen terpotong di atas */
-main {
-  padding-top: env(safe-area-inset-top, 20px);
 }
