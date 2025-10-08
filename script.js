@@ -22,21 +22,6 @@ const formTab = document.getElementById('formTab');
 const navList = document.getElementById('navList');
 const navForm = document.getElementById('navForm');
 
-// === Dynamic viewport fix for mobile browsers ===
-// function updateViewportHeight() {
-//   const vh = window.visualViewport ? window.visualViewport.height * 0.01 : window.innerHeight * 0.01;
-//   document.documentElement.style.setProperty('--vh', `${vh}px`);
-// }
-
-// window.addEventListener('resize', updateViewportHeight);
-// window.addEventListener('orientationchange', updateViewportHeight);
-// window.addEventListener('load', updateViewportHeight);
-// if (window.visualViewport) {
-//   window.visualViewport.addEventListener('resize', updateViewportHeight);
-// }
-
-updateViewportHeight();
-
 // Dropdown
 const dropdown = document.getElementById('priorityDropdown');
 const dropdownHeader = document.getElementById('dropdownHeader');
