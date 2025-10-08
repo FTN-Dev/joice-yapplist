@@ -24,6 +24,38 @@ body::before {
 
 /* ============================== */
 
+/* ======= FIX SAFE AREA UNTUK HP ======= */
+
+/* Pastikan body dan html penuh layar */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background: #f9fafb;
+}
+
+/* Gunakan viewport height yang aman untuk mobile */
+.container, .auth-wrap, .tabs-area {
+  min-height: 100vh;
+  min-height: 100dvh; /* dukungan browser modern */
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Header tidak nempel ke pinggir layar */
+.app-header {
+  padding-top: calc(1rem + env(safe-area-inset-top));
+}
+
+/* Navigasi bawah agar tidak ketutup area gesture */
+.bottom-nav {
+  padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+}
+
+
+/* =================================== */
 :root{
   --bg: #0f1724;
   --card: #0b1220;
