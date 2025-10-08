@@ -169,29 +169,30 @@ todoForm.addEventListener('submit', async (e) => {
   if (!title || !assigner) return alert("Nama Topik dan Pembuat wajib diisi!");
 
   try {
-    const userId = currentUser.id;
-    const { data, error } = await supabase
-      .from('yapp_tasks')
-      .insert([{ user_id: userId, title, notes, priority, assigner }])
-      .select(); // return inserted row(s)
+  const { data, error } = await supabase
+    .from('yapp_tasks')
+    .insert([{ title, notes, priority, assigner, shared_id: 'shared' }])
+    .select(); // return inserted row(s)
 
-    if (error) throw error;
-    // append to tasks and render
-    if (data && data[0]) {
-      tasks.unshift(data[0]);
-    }
-    renderTasks();
-    todoForm.reset();
-    // reset dropdown to Low
-    dropdownIcon.textContent = '🟢';
-    dropdownText.textContent = 'Low';
-    hiddenPriorityInput.value = 'Low';
-    dropdownList.querySelectorAll('li').forEach(li => li.classList.remove('active'));
-    dropdownList.querySelector('li[data-value="Low"]').classList.add('active');
-    goToTab(0);
+  if (error) throw error;
+
+  // append to tasks and render
+  if (data && data[0]) {
+    tasks.unshift(data[0]);
+  }
+  renderTasks();
+  todoForm.reset();
+
+  // reset dropdown to Low
+  dropdownIcon.textContent = '🟢';
+  dropdownText.textContent = 'Low';
+  hiddenPriorityInput.value = 'Low';
+  dropdownList.querySelectorAll('li').forEach(li => li.classList.remove('active'));
+  dropdownList.querySelector('li[data-value="Low"]').classList.add('active');
+  goToTab(0);
   } catch (err) {
-    console.error('Insert task error', err);
-    alert('Gagal menambah topik: ' + (err.message || err));
+  console.error('Insert task error', err);
+  alert('Gagal menambah topik: ' + (err.message || err));
   }
 });
 
