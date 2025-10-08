@@ -16,6 +16,12 @@ main, .task-container {
   box-sizing: border-box;
 }
 
+body::before {
+  content: '';
+  display: block;
+  height: env(safe-area-inset-top, 20px);
+}
+
 /* ============================== */
 
 :root{
