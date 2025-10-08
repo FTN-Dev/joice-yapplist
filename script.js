@@ -22,6 +22,14 @@ const formTab = document.getElementById('formTab');
 const navList = document.getElementById('navList');
 const navForm = document.getElementById('navForm');
 
+// === Fix 100vh issue on mobile browsers ===
+function fixMobileHeight() {
+  document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+}
+window.addEventListener('resize', fixMobileHeight);
+window.addEventListener('orientationchange', fixMobileHeight);
+fixMobileHeight();
+
 // Dropdown
 const dropdown = document.getElementById('priorityDropdown');
 const dropdownHeader = document.getElementById('dropdownHeader');

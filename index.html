@@ -8,13 +8,6 @@
   <!-- Supabase JS (UMD) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <link rel="manifest" href="/manifest.json" />
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js')
-        .then(() => console.log('✅ Service Worker registered'))
-        .catch(err => console.error('SW registration failed', err));
-    }
-  </script>
 </head>
 <body>
   <!-- AUTH (login/register) -->
@@ -117,6 +110,13 @@
     </nav>
   </div>
 
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(() => console.log("✅ Service Worker registered"))
+      .catch(err => console.error("❌ Service Worker registration failed:", err));
+  }
+  </script>
   <script src="script.js"></script>
 </body>
 </html>
