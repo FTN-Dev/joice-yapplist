@@ -217,20 +217,28 @@ function renderTasks() {
     const li = document.createElement('li');
     li.className = `task-item ${(task.priority || 'Low').toLowerCase()}`;
     li.innerHTML = `
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <h3>${escapeHtml(task.title)}</h3>
-        <div class="priority">Prioritas: <strong>${escapeHtml(task.priority || '')}</strong></div>
+    <div class="task-item-header">
+      <h3>${escapeHtml(task.title)}</h3>
+      <div class="priority">Prioritas: <strong>${escapeHtml(task.priority || '')}</strong></div>
+    </div>
+
+    ${task.notes ? `
+      <div class="task-item-body">
+        <div class="notes"><p>${escapeHtml(task.notes).replace(/\n/g, '<br>')}</p></div>
+        <div class="assigner">Dibuat Oleh: ${escapeHtml(task.assigner || '')}</div>
       </div>
-      ${task.notes ? `<div class="notes"><p>${escapeHtml(task.notes).replace(/\n/g, '<br>')}</p></div>` : ''}
-      <div style="display:flex;justify-content:space-between;align-items:center">
+      ` : `
+      <div class="task-item-body">
+        <div class="assigner">Dibuat Oleh: ${escapeHtml(task.assigner || '')}</div>
+      </div>
+      `}
+
+      <div class="task-item-footer">
         <label>
-          <input type="checkbox" class="check-btn" data-id="${task.id}" ${task.checked ? 'checked' : ''}>
-          Selesai
+        <input type="checkbox" class="check-btn" data-id="${task.id}" ${task.checked ? 'checked' : ''}>
+        Selesai
         </label>
-        <div>
-          <span class="assigner">Dibuat Oleh: ${escapeHtml(task.assigner || '')}</span>
-          <button class="delete-btn" data-id="${task.id}">Hapus</button>
-        </div>
+        <button class="delete-btn" data-id="${task.id}">Hapus</button>
       </div>
     `;
     taskList.appendChild(li);

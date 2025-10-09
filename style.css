@@ -86,7 +86,7 @@ body{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:18px;
+  padding: 28px 18px 18px; /* atas lebih besar */
   border-bottom:1px solid rgba(255,255,255,0.05);
 }
 .header-actions{display:flex;gap:8px;align-items:center}
@@ -144,36 +144,73 @@ body{
   margin-top: 10px; /* jarak antar item */
 }
 
-.task-list {
-  flex: 1;
-  overflow-y: auto;
-  max-height: 100%;
-  padding-right: 6px; /* ruang kecil untuk scrollbar */
+/* ==================================== */
+
+.task-item {
+  background: var(--glass);
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.task-item{
-  background:var(--glass);
-  padding:12px;
-  border-radius:10px;
-  border:1px solid rgba(255,255,255,0.02);
-  display:flex;
-  flex-direction:column;
-  gap:8px;
+/* Header: judul kiri, prioritas kanan */
+.task-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-.task-item.low .priority strong{color:var(--success)}
-.task-item.medium .priority strong{color:#f59e0b}
-.task-item.high .priority strong{color:var(--danger)}
-.task-item h3{margin:0;font-size:16px}
-.notes p{margin:0;color:var(--muted);font-size:13px}
-.assigner{color:var(--muted);font-size:13px}
-.delete-btn{
-  align-self:flex-end;
-  padding:6px 8px;
-  border-radius:8px;
-  border:none;
-  background:transparent;
-  color:var(--danger);
-  cursor:pointer;
+
+.task-item-header h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.task-item-header .priority {
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.task-item.low .priority strong { color: var(--success); }
+.task-item.medium .priority strong { color: #f59e0b; }
+.task-item.high .priority strong { color: var(--danger); }
+
+/* Body: notes + assigner */
+.task-item-body {
+  font-size: 13px;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.notes p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.assigner {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* Footer: checkbox kiri, hapus kanan */
+.task-item-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.task-item-footer .delete-btn {
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--danger);
+  cursor: pointer;
 }
 
 /* === Form Style === */
