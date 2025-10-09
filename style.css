@@ -135,7 +135,7 @@ body{
   flex: 1;
   overflow-y: auto;
   max-height: calc(80vh - 200px); 
-  padding-bottom: 80px; 
+  padding-bottom: 10px; 
 }
 .todo-list h2{
   margin:0 0 10px 0
