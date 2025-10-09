@@ -136,7 +136,8 @@ body{
   overflow-y: auto;
   max-height: calc(80vh - 200px);  
 }
-.todo-list h2{
+
+#listTab h2{
   margin:0 0 10px 0
 }
 
