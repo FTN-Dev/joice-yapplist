@@ -13,16 +13,22 @@
 }
 
 *{box-sizing:border-box}
-html,body{height:100%}
-body{
+html,body{
+  height:100%;
+  overflow: hidden;
   margin:0;
   background: linear-gradient(180deg,#07112a 0%, #091528 100%);
   color:#e6eef7;
+  -webkit-font-smoothing:antialiased;
+  overscroll-behavior: none;
+}
+
+/* === AUTH AREA === */
+body{
   display:flex;
   align-items:center;
   justify-content:center;
   padding:28px;
-  -webkit-font-smoothing:antialiased;
 }
 
 .auth-wrap, .container{
@@ -38,7 +44,6 @@ body{
   box-shadow: 0 6px 24px rgba(2,6,23,0.6);
   border:1px solid rgba(255,255,255,0.03);
 }
-
 .auth-card h2{margin:0 0 12px 0}
 .auth-form{display:flex;flex-direction:column;gap:10px}
 .auth-form input{
@@ -52,50 +57,143 @@ body{
 .small{font-size:13px}
 .hidden{display:none}
 
-/* APP */
+/* === APP CONTAINER === */
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: var(--max-width);
+  background: rgba(255,255,255,0.02);
+  padding: 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.03);
+  box-shadow: 0 8px 40px rgba(2,6,23,0.6);
+}
+
+/* .container {
+  width: 100%;
+  max-width: var(--max-width);
+  max-height: calc(110vh - 80px);
+  overflow: hidden; 
+  border-radius: 16px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.03);
+  box-shadow: 0 8px 40px rgba(2,6,23,0.6);
+} */
+
+
 .app-header{
-  display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:18px;
+  border-bottom:1px solid rgba(255,255,255,0.05);
 }
 .header-actions{display:flex;gap:8px;align-items:center}
 .btn-ghost{
   background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px 12px;border-radius:9px;color:var(--muted);cursor:pointer;
 }
-.container{background:rgba(255,255,255,0.02);padding:18px;border-radius:16px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 8px 40px rgba(2,6,23,0.6);}
 
-/* Tabs & forms */
-.tabs-area{display:flex;flex-direction:column;gap:14px}
-.tabs-wrapper{min-height:320px}
-.tab{display:none}
-.tab.active{display:block}
+/* === Tabs & Forms === */
+.tabs-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 
-.todo-list h2{margin:0 0 10px 0}
-.task-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.tab.active {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.tabs-wrapper{
+  flex:1;
+  overflow:hidden;
+}
+
+.tab{display:none;height:100%}
+
+/* === Daftar Yapp === */
+.todo-list {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0; /* penting agar scroll bekerja */
+}
+
+/* ==INI YANG BIKIN ADA SCROLLBOXNYA== */
+.todo-list {
+  overflow-y: auto;
+  max-height: calc(100vh - 150px);
+  padding-bottom: 80px; /* biar gak ketutupan nav bawah */
+}
+
+.todo-list h2{
+  margin:0 0 10px 0
+}
+
+.task-list {
+  list-style: none; /* hilangkan bullet */
+  padding: 0 10px; /* kanan kiri sedikit biar rapi */
+}
+
+.task-list li + li {
+  margin-top: 10px; /* jarak antar item */
+}
+
+.task-list {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 100%;
+  padding-right: 6px; /* ruang kecil untuk scrollbar */
+}
+
 .task-item{
-  background:var(--glass);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02);
-  display:flex;flex-direction:column;gap:8px;
+  background:var(--glass);
+  padding:12px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.02);
+  display:flex;
+  flex-direction:column;
+  gap:8px;
 }
 .task-item.low .priority strong{color:var(--success)}
 .task-item.medium .priority strong{color:#f59e0b}
 .task-item.high .priority strong{color:var(--danger)}
-
 .task-item h3{margin:0;font-size:16px}
 .notes p{margin:0;color:var(--muted);font-size:13px}
 .assigner{color:var(--muted);font-size:13px}
-
 .delete-btn{
-  align-self:flex-end;padding:6px 8px;border-radius:8px;border:none;background:transparent;color:var(--danger);cursor:pointer;
+  align-self:flex-end;
+  padding:6px 8px;
+  border-radius:8px;
+  border:none;
+  background:transparent;
+  color:var(--danger);
+  cursor:pointer;
 }
 
-/* Form style */
+/* === Form Style === */
 .todo-form{display:flex;flex-direction:column;gap:12px}
 .form-row{display:flex;flex-direction:column;gap:6px}
 .todo-form input, .todo-form textarea{
   padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;
 }
 .todo-form textarea{min-height:90px;resize:vertical}
-.btn-primary{background:var(--accent);color:#021226;padding:10px;border-radius:10px;border:none;font-weight:600;cursor:pointer}
+.btn-primary{
+  background:var(--accent);
+  color:#021226;
+  padding:10px;
+  border-radius:10px;
+  border:none;
+  font-weight:600;
+  cursor:pointer;
+}
 
-/* Custom dropdown */
+/* === Custom Dropdown === */
 .custom-dropdown{position:relative;width:160px}
 .dropdown-header{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);cursor:pointer;background:transparent}
 .dropdown-header .icon{margin-right:8px}
@@ -106,14 +204,41 @@ body{
 .dropdown-list li{padding:8px;border-radius:6px;cursor:pointer}
 .dropdown-list li.active, .dropdown-list li:hover{background:rgba(255,255,255,0.02)}
 
-/* bottom nav */
-.bottom-nav{display:flex;gap:8px;justify-content:space-between;margin-top:14px}
-.bottom-nav button{flex:1;padding:12px;border-radius:10px;border:none;background:rgba(255,255,255,0.02);color:var(--muted);cursor:pointer}
-.bottom-nav .nav-active{background:var(--accent);color:#021226;font-weight:700}
+/* === Bottom Navigation (Fixed) === */
+.bottom-nav {
+  position: sticky;
+  bottom: 0;
+  /* background: rgba(15,23,36,0.95); */
+  padding-top: 8px;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  z-index: 100;
+}
 
-/* responsive */
+.bottom-nav button{
+  flex:1;
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  background:rgba(255,255,255,0.02);
+  color:var(--muted);
+  cursor:pointer;
+  font-weight:600;
+}
+.bottom-nav .nav-active{
+  background:var(--accent);
+  color:#021226;
+  font-weight:700;
+}
+
+/* === RESPONSIVE === */
 @media (max-width:600px){
   body{padding:16px}
   .custom-dropdown{width:120px}
   .auth-card{padding:16px}
+  .tabs-area{padding:14px}
+  .task-list{padding-bottom:70px}
+  .bottom-nav{padding:8px 12px}
+  .bottom-nav button{padding:10px;font-size:0.9rem}
 }
