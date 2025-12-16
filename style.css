@@ -647,4 +647,5 @@ textarea.form-control {
   .auth-card { padding: 30px 20px; }
   .bottom-nav { width: calc(100% - 32px); bottom: 16px; }
   .tabs-area { padding-bottom: 90px; }
+  .task-list { padding-bottom: 350px; }
 }
