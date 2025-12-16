@@ -23,11 +23,7 @@ const navList = document.getElementById('navList');
 const navForm = document.getElementById('navForm');
 
 // Dropdown
-const dropdown = document.getElementById('priorityDropdown');
-const dropdownHeader = document.getElementById('dropdownHeader');
-const dropdownList = document.getElementById('dropdownList');
-const dropdownIcon = document.getElementById('dropdownIcon');
-const dropdownText = document.getElementById('dropdownText');
+const priorityOptions = document.querySelectorAll('.p-option');
 const hiddenPriorityInput = document.getElementById('priority');
 
 let isOpen = false;
@@ -246,9 +242,12 @@ todoForm.addEventListener('submit', async (e) => {
     if (data?.[0]) tasks.unshift(data[0]);
     renderTasks();
     todoForm.reset();
-    dropdownIcon.textContent = '🟢';
-    dropdownText.textContent = 'Low';
+    
+    // Reset priority
+    priorityOptions.forEach(o => o.classList.remove('selected'));
+    document.querySelector('.p-option[data-value="Low"]').classList.add('selected');
     hiddenPriorityInput.value = 'Low';
+
     goToTab(0);
   } catch (err) {
     console.error('Insert task error', err);
@@ -295,48 +294,74 @@ function renderTasks() {
 
   tasks.forEach(task => {
     const li = document.createElement('li');
-    li.className = `task-item ${(task.priority || 'Low').toLowerCase()}`;
+    li.className = `task-item ${(task.priority || 'Low').toLowerCase()} ${task.checked ? 'completed' : ''}`;
+    
+    // Escape HTML to prevent XSS
+    const title = escapeHtml(task.title);
+    const priority = escapeHtml(task.priority || 'Low');
+    const assigner = escapeHtml(task.assigner || 'Anon');
+    const notes = task.notes ? escapeHtml(task.notes).replace(/\n/g, '<br>') : '';
+    
     li.innerHTML = `
-    <div class="task-item-header">
-      <h3>${escapeHtml(task.title)}</h3>
-      <div class="priority">Prioritas: <strong>${escapeHtml(task.priority || '')}</strong></div>
-    </div>
-
-    ${task.notes ? `
-      <div class="task-item-body">
-        <div class="notes"><p>${escapeHtml(task.notes).replace(/\n/g, '<br>')}</p></div>
-        <div class="assigner">Dibuat Oleh: ${escapeHtml(task.assigner || '')}</div>
-      </div>
-      ` : `
-      <div class="task-item-body">
-        <div class="assigner">Dibuat Oleh: ${escapeHtml(task.assigner || '')}</div>
-      </div>
-      `}
-
-      <div class="task-item-footer">
-        <label>
-        <input type="checkbox" class="check-btn" data-id="${task.id}" ${task.checked ? 'checked' : ''}>
-        Selesai
-        </label>
-        <button class="delete-btn" data-id="${task.id}">Hapus</button>
+      <div class="task-content">
+        <div class="task-header">
+          <p class="task-title">${title}</p>
+          <span class="task-badge">${priority}</span>
+        </div>
+        
+        ${notes ? `<div class="task-notes">${notes}</div>` : ''}
+        
+        <div class="task-footer">
+          <div class="task-assigner">
+            ${assigner}
+          </div>
+          <div class="task-actions">
+             <button class="action-btn check ${task.checked ? 'checked' : ''}" data-id="${task.id}" title="Selesai">
+               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+             </button>
+             <button class="action-btn delete" data-id="${task.id}" title="Hapus">
+               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+             </button>
+          </div>
+        </div>
       </div>
     `;
     taskList.appendChild(li);
   });
 
+  // Re-attach listeners because we use innerHTML
   document.querySelectorAll('.delete-btn').forEach(button => {
-    button.addEventListener('click', function () {
+    button.addEventListener('click', function (e) {
+      e.stopPropagation(); // prevent card click if we add one later
       const id = Number(this.dataset.id);
       deleteTask(id);
     });
   });
 
   document.querySelectorAll('.check-btn').forEach(checkbox => {
-    checkbox.addEventListener('change', function () {
-      const id = Number(this.dataset.id);
-      toggleTaskCheck(id, this.checked);
-    });
+     // Legacy support if check-btn class is used, but we switched to action-btn check
   });
+  
+  // New listeners
+  document.querySelectorAll('.action-btn.delete').forEach(btn => {
+     btn.addEventListener('click', function() {
+        const id = Number(this.dataset.id);
+        deleteTask(id);
+     });
+  });
+  
+  document.querySelectorAll('.action-btn.check').forEach(btn => {
+     btn.addEventListener('click', function() {
+        const id = Number(this.dataset.id);
+        // Toggle logic
+        // We find the task object to see current state, or just toggle visually? 
+        // Better to find task
+        const task = tasks.find(t => t.id === id);
+        if(task) toggleTaskCheck(id, !task.checked);
+     });
+  });
+
+
 }
 
 // ----------------- HELPER FUNCTIONS -----------------
@@ -366,32 +391,16 @@ function escapeHtml(str = '') {
 }
 
 // ----------------- DROPDOWN -----------------
-dropdownHeader.addEventListener('click', (e) => {
-  e.stopPropagation();
-  isOpen = !isOpen;
-  dropdownList.classList.toggle('active', isOpen);
-  dropdownHeader.querySelector('.arrow').style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
-});
-
-dropdownList.addEventListener('click', (e) => {
-  const target = e.target.closest('li');
-  if (!target) return;
-  const value = target.dataset.value;
-  const icon = target.querySelector('.icon').textContent;
-  dropdownIcon.textContent = icon;
-  dropdownText.textContent = value;
-  hiddenPriorityInput.value = value;
-  isOpen = false;
-  dropdownList.classList.remove('active');
-  dropdownHeader.querySelector('.arrow').style.transform = 'rotate(0deg)';
-});
-
-document.addEventListener('click', (e) => {
-  if (!dropdown.contains(e.target)) {
-    isOpen = false;
-    dropdownList.classList.remove('active');
-    dropdownHeader.querySelector('.arrow').style.transform = 'rotate(0deg)';
-  }
+// ----------------- PRIORITY SELECTOR -----------------
+priorityOptions.forEach(option => {
+  option.addEventListener('click', () => {
+    // Remove active class from all
+    priorityOptions.forEach(o => o.classList.remove('selected'));
+    // Add to clicked
+    option.classList.add('selected');
+    // Update hidden input
+    hiddenPriorityInput.value = option.dataset.value;
+  });
 });
 
 // ----------------- TAB NAVIGATION -----------------
