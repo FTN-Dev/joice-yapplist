@@ -61,6 +61,13 @@ registerForm.addEventListener('submit', async (e) => {
     authMsg.style.color = "#ff6b6b";
     return;
   }
+
+  const specialCode = document.getElementById('specialCode').value.trim();
+  if (specialCode !== "cutiesfwr28") {
+    authMsg.textContent = "Kode spesial salah! Anda tidak diizinkan mendaftar.";
+    authMsg.style.color = "#ff6b6b";
+    return;
+  }
   
   try {
     console.log('Registering user:', email);
