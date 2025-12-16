@@ -318,6 +318,12 @@ button { font-family: inherit; }
   min-height: 0;
 }
 
+.todo-list {
+  flex: 1;
+  overflow-y: auto;
+  max-height: calc(100vh);  
+}
+
 /* Scrollbar Styling - HIGH VISIBILITY */
 .todo-list::-webkit-scrollbar { 
   width: 8px;  /* Wider */
