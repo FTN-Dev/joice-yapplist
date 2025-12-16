@@ -143,6 +143,7 @@ button { font-family: inherit; }
   font-weight: 700;
   font-size: 28px;
   background: linear-gradient(to right, #fff, #94a3b8);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-align: center;
@@ -303,12 +304,13 @@ button { font-family: inherit; }
 
 .todo-list {
   flex: 1;
+  min-height: 0; /* Crucial for nested flex scrolling */
   overflow-y: auto;
-  padding-right: 4px; /* Scrollbar space */
 }
-/* Scrollbar Styling */
-.todo-list::-webkit-scrollbar { width: 4px; }
-.todo-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+/* Scrollbar Styling - Made more visible */
+.todo-list::-webkit-scrollbar { width: 6px; }
+.todo-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.4); border-radius: 4px; }
+.todo-list::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
 
 .task-list {
   list-style: none;
@@ -390,6 +392,7 @@ button { font-family: inherit; }
   margin-bottom: 12px;
   line-height: 1.5;
   display: -webkit-box;
+  line-clamp: 3;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
