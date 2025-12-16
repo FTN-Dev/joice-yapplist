@@ -120,23 +120,19 @@ button { font-family: inherit; }
 
 /* === AUTH SCREEN === */
 #authContainer {
-  /* Ensure it takes full viewport height */
-  height: 100vh; 
+  /* Let body flexbox center this container vertically */
+  height: auto; 
   width: 100%;
-  /* Reset padding if any */
-  padding: 0 20px;
+  padding: 20px;
 }
 
 .auth-wrap {
-  /* This class is on the same element as #authContainer in index.html line 14 */
   display: flex;
   flex-direction: column;
+  /* Remove conflicting alignment */
 }
 
 .auth-card {
-  /* Margin auto in a flex container centers the item in available space */
-  margin: auto; 
-  
   width: 100%;
   background: rgba(15, 23, 42, 0.6);
   backdrop-filter: blur(20px);
