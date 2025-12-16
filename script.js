@@ -363,63 +363,114 @@ function setupRealtimeNotifications() {
     .subscribe();
 }
 
-// Register - MODIFIKASI
+// Register - TAMBAHKAN ERROR HANDLING
 registerForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   authMsg.textContent = '';
   const email = document.getElementById('regEmail').value;
   const password = document.getElementById('regPassword').value;
+  
   try {
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    // Sign up via Supabase Auth
+    const { data, error } = await supabase.auth.signUp({ 
+      email, 
+      password,
+      options: {
+        // Optional: Auto redirect setelah email confirm
+        emailRedirectTo: window.location.origin
+      }
+    });
+    
     if (error) throw error;
     
-    // Insert ke public.users setelah register sukses
-    if (data.user) {
-      const { error: userError } = await supabase
-        .from('users')
-        .insert([{ id: data.user.id, email: data.user.email }]);
+    // Tampilkan pesan sukses
+    if (data.user?.identities?.length === 0) {
+      // User sudah ada (mungkin dari sebelumnya)
+      authMsg.textContent = "User sudah terdaftar. Silakan login.";
+      authMsg.style.color = "#f59e0b";
+    } else {
+      authMsg.textContent = "Pendaftaran berhasil! Silakan cek email untuk verifikasi.";
+      authMsg.style.color = "#34d399";
       
-      if (userError) {
-        console.error('Failed to insert to public.users:', userError);
-        // Lanjutkan saja, tidak perlu throw error
-      }
+      // Trigger akan handle insert ke public.users
+      // Tapi kita tambahkan backup manual
+      setTimeout(async () => {
+        try {
+          await supabase
+            .from('users')
+            .insert([{ id: data.user.id, email: data.user.email }])
+            .select();
+        } catch (err) {
+          console.warn('Backup insert failed:', err);
+        }
+      }, 1000);
     }
     
-    authMsg.textContent = "Pendaftaran berhasil. Cek email untuk verifikasi.";
     toggleAuthLink.click();
+    
   } catch (err) {
-    authMsg.textContent = err.message || String(err);
+    console.error('Register error:', err);
+    authMsg.textContent = "Error: " + (err.message || String(err));
+    authMsg.style.color = "#ff6b6b";
   }
 });
 
-// Login - MODIFIKASI (optional, untuk pastikan user ada di public.users)
+// Login - MODIFIKASI LENGKAP
 loginForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   authMsg.textContent = '';
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
+  
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    // 1. Coba login ke Supabase Auth
+    const { data, error } = await supabase.auth.signInWithPassword({ 
+      email, 
+      password 
+    });
+    
     if (error) throw error;
     
-    // Pastikan user ada di public.users
+    // 2. Pastikan user ada di public.users (sync)
     if (data.user) {
-      const { data: userData } = await supabase
-        .from('users')
-        .select('id')
-        .eq('id', data.user.id)
-        .maybeSingle();
-      
-      if (!userData) {
-        // Auto-create jika belum ada
-        await supabase
+      try {
+        // Cek apakah user sudah ada di public.users
+        const { data: userCheck, error: checkError } = await supabase
           .from('users')
-          .insert([{ id: data.user.id, email: data.user.email }]);
+          .select('id')
+          .eq('id', data.user.id)
+          .maybeSingle();
+        
+        // Jika belum ada, BUAT baru
+        if (!userCheck && !checkError) {
+          const { error: insertError } = await supabase
+            .from('users')
+            .insert([{ 
+              id: data.user.id, 
+              email: data.user.email 
+            }])
+            .select()
+            .single();
+          
+          if (insertError) {
+            console.warn('Failed to sync to public.users:', insertError);
+            // Lanjutkan saja, jangan block login
+          } else {
+            console.log('User synced to public.users');
+          }
+        }
+      } catch (syncErr) {
+        console.warn('Sync error (non-critical):', syncErr);
+        // Jangan block login karena error sync
       }
     }
     
     authMsg.textContent = "Login berhasil!";
+    authMsg.style.color = "#34d399"; // warna hijau
+    
   } catch (err) {
-    authMsg.textContent = err.message || String(err);
+    console.error('Login error:', err);
+    authMsg.textContent = "Login gagal: " + (err.message || "Invalid credentials");
+    authMsg.style.color = "#ff6b6b"; // warna merah
   }
 });
