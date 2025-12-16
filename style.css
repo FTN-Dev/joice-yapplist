@@ -481,7 +481,7 @@ button { font-family: inherit; }
 
 .action-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
 .action-btn.delete:hover { color: var(--danger); background: rgba(239, 68, 68, 0.1); }
-.action-btn.check { color: var(--glass-border); }
+.action-btn.check { color: rgb(148, 163, 184); }
 .action-btn.check.checked { color: var(--success); }
 .action-btn.check:hover { color: var(--success); background: rgba(16, 185, 129, 0.1); }
 
