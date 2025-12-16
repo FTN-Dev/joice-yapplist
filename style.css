@@ -253,6 +253,7 @@ button { font-family: inherit; }
 }
 
 /* === TABS AREA === */
+/* === TABS AREA === */
 .tabs-area {
   flex: 1;
   overflow: hidden;
@@ -266,31 +267,39 @@ button { font-family: inherit; }
   position: relative;
   overflow: hidden;
   width: 100%;
+  display: flex;       /* Explicit flex */
+  flex-direction: column;
 }
 
 .tab {
   display: none;
   height: 100%;
+  width: 100%;        /* Explicit width */
   flex-direction: column;
-  padding: 0 20px 100px 20px; /* Bottom padding for nav */
+  padding: 0 20px 100px 20px;
   animation: fadeIn 0.4s ease;
+  overflow: hidden;   /* Ensure tab itself doesn't scroll logicless */
 }
 
+/* When active, make it flex to fill parent */
 .tab.active {
   display: flex;
-}
+  flex: 1;            /* Grow to fill wrapper */
+} 
 
-/* === TAB: LIST === */
+/* ... Filters ... */
 .filters {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
   overflow-x: auto;
   padding-bottom: 4px;
+  flex-shrink: 0;     /* Don't shrink */
 }
 
 .status-summary {
   margin-bottom: 20px;
+  flex-shrink: 0;     /* Don't shrink */
 }
 .status-summary h2 {
   font-size: 32px;
@@ -304,13 +313,30 @@ button { font-family: inherit; }
 
 .todo-list {
   flex: 1;
-  min-height: 0; /* Crucial for nested flex scrolling */
+  min-height: 0;
   overflow-y: auto;
+  /* Ensure scrollbar has space */
+  padding-right: 8px; 
 }
-/* Scrollbar Styling - Made more visible */
-.todo-list::-webkit-scrollbar { width: 6px; }
-.todo-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.4); border-radius: 4px; }
-.todo-list::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+
+/* Scrollbar Styling - HIGH VISIBILITY */
+.todo-list::-webkit-scrollbar { 
+  width: 8px;  /* Wider */
+  height: 8px; 
+}
+.todo-list::-webkit-scrollbar-thumb { 
+  background: rgba(255, 255, 255, 0.5); /* Brighter */
+  border-radius: 10px; 
+  border: 2px solid transparent; /* Padding around thumb */
+  background-clip: content-box;  /* Makes thumb look floating */
+}
+.todo-list::-webkit-scrollbar-track { 
+  background: rgba(0, 0, 0, 0.1); 
+  border-radius: 10px;
+}
+.todo-list::-webkit-scrollbar-corner {
+  background: transparent;
+}
 
 .task-list {
   list-style: none;
