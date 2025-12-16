@@ -145,7 +145,7 @@ button { font-family: inherit; }
 }
 
 .auth-card h2 {
-  margin: 0 0 8px 0;
+  margin: 0 0 16px 0;
   font-weight: 700;
   font-size: 28px;
   background: linear-gradient(to right, #fff, #94a3b8);
