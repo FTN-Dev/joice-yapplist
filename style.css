@@ -500,6 +500,7 @@ button { font-family: inherit; }
 
 .form-row label {
   padding-bottom: 8px;
+  margin-bottom: 8px;
 }
 
 .form-header-text h2 {
