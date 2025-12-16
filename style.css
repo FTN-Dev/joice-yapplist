@@ -499,7 +499,7 @@ button { font-family: inherit; }
 }
 
 .form-row label {
-  margin: 0 0 8px 0;
+  padding-bottom: 8px;
 }
 
 .form-header-text h2 {
