@@ -312,11 +312,10 @@ button { font-family: inherit; }
 }
 
 .todo-list {
+  display: flex;
+  flex-direction: column;
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
-  /* Ensure scrollbar has space */
-  padding-right: 8px; 
 }
 
 /* Scrollbar Styling - HIGH VISIBILITY */
