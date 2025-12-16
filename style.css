@@ -456,7 +456,7 @@ button { font-family: inherit; }
 .task-assigner::before {
   content: '';
   display: block;
-  width: 16px; height: 16px;
+  width: 11px; height: 11px;
   border-radius: 50%;
   background: linear-gradient(45deg, rgba(208, 0, 0, 0.863), rgb(255, 247, 0));
 }
