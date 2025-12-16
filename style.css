@@ -424,7 +424,7 @@ button { font-family: inherit; }
 .task-item.low .task-badge { color: var(--success); background: rgba(16, 185, 129, 0.1); }
 
 .task-notes {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-muted);
   margin-bottom: 12px;
   line-height: 1.5;
@@ -457,7 +457,7 @@ button { font-family: inherit; }
   display: block;
   width: 16px; height: 16px;
   border-radius: 50%;
-  background: linear-gradient(45deg, var(--primary), var(--accent));
+  background: linear-gradient(45deg, rgba(208, 0, 0, 0.863), rgb(255, 247, 0));
 }
 
 .task-actions {
@@ -647,5 +647,5 @@ textarea.form-control {
   .auth-card { padding: 30px 20px; }
   .bottom-nav { width: calc(100% - 32px); bottom: 16px; }
   .tabs-area { padding-bottom: 90px; }
-  .task-list { padding-bottom: 350px; }
+  .task-list { padding-bottom: 325px; }
 }
