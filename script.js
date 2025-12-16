@@ -362,3 +362,64 @@ function setupRealtimeNotifications() {
     )
     .subscribe();
 }
+
+// Register - MODIFIKASI
+registerForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  authMsg.textContent = '';
+  const email = document.getElementById('regEmail').value;
+  const password = document.getElementById('regPassword').value;
+  try {
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (error) throw error;
+    
+    // Insert ke public.users setelah register sukses
+    if (data.user) {
+      const { error: userError } = await supabase
+        .from('users')
+        .insert([{ id: data.user.id, email: data.user.email }]);
+      
+      if (userError) {
+        console.error('Failed to insert to public.users:', userError);
+        // Lanjutkan saja, tidak perlu throw error
+      }
+    }
+    
+    authMsg.textContent = "Pendaftaran berhasil. Cek email untuk verifikasi.";
+    toggleAuthLink.click();
+  } catch (err) {
+    authMsg.textContent = err.message || String(err);
+  }
+});
+
+// Login - MODIFIKASI (optional, untuk pastikan user ada di public.users)
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  authMsg.textContent = '';
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    
+    // Pastikan user ada di public.users
+    if (data.user) {
+      const { data: userData } = await supabase
+        .from('users')
+        .select('id')
+        .eq('id', data.user.id)
+        .maybeSingle();
+      
+      if (!userData) {
+        // Auto-create jika belum ada
+        await supabase
+          .from('users')
+          .insert([{ id: data.user.id, email: data.user.email }]);
+      }
+    }
+    
+    authMsg.textContent = "Login berhasil!";
+  } catch (err) {
+    authMsg.textContent = err.message || String(err);
+  }
+});
