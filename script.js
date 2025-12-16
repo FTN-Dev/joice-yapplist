@@ -34,7 +34,7 @@ let isOpen = false;
 let tasks = [];
 let currentUser = null;
 
-// ----------------- AUTH -----------------
+// ----------------- CUSTOM AUTH SYSTEM -----------------
 toggleAuthLink.addEventListener('click', (e) => {
   e.preventDefault();
   const onLogin = loginForm.style.display !== 'none' && !loginForm.classList.contains('hidden');
@@ -51,80 +51,152 @@ toggleAuthLink.addEventListener('click', (e) => {
   }
 });
 
-// Register
+// Custom Register Function
 registerForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   authMsg.textContent = '';
+  authMsg.style.color = '';
+  
   const email = document.getElementById('regEmail').value;
   const password = document.getElementById('regPassword').value;
+  
+  if (password.length < 6) {
+    authMsg.textContent = "Password minimal 6 karakter!";
+    authMsg.style.color = "#ff6b6b";
+    return;
+  }
+  
   try {
-    const { error } = await supabase.auth.signUp({ email, password });
+    console.log('Registering user:', email);
+    
+    // Cek apakah email sudah terdaftar
+    const { data: existingUser, error: checkError } = await supabase
+      .from('users')
+      .select('email')
+      .eq('email', email)
+      .maybeSingle();
+    
+    if (checkError) {
+      console.error('Check error:', checkError);
+    }
+    
+    if (existingUser) {
+      authMsg.textContent = "Email sudah terdaftar!";
+      authMsg.style.color = "#ff6b6b";
+      return;
+    }
+    
+    // Register user baru (password disimpan plain text - HANYA UNTUK BELAJAR!)
+    const { data, error } = await supabase
+      .from('users')
+      .insert([{ 
+        email, 
+        password // PERHATIAN: Password disimpan plain text!
+      }])
+      .select()
+      .single();
+    
     if (error) throw error;
-    authMsg.textContent = "Pendaftaran berhasil. Cek email untuk verifikasi.";
-    toggleAuthLink.click();
+    
+    console.log('Register success:', data);
+    
+    // Auto login setelah register
+    currentUser = data;
+    localStorage.setItem('yapp_user', JSON.stringify(data));
+    
+    authMsg.textContent = "Pendaftaran berhasil! Anda langsung login.";
+    authMsg.style.color = "#34d399";
+    
+    // Tampilkan main app setelah 1 detik
+    setTimeout(() => {
+      showMain(currentUser);
+    }, 1000);
+    
   } catch (err) {
-    authMsg.textContent = err.message || String(err);
+    console.error('Register error:', err);
+    authMsg.textContent = "Error: " + (err.message || String(err));
+    authMsg.style.color = "#ff6b6b";
   }
 });
 
-// Login
+// Custom Login Function
 loginForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   authMsg.textContent = '';
+  authMsg.style.color = '';
+  
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
+  
   try {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+    console.log('Attempting login:', email);
+    
+    // Cari user di database
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .eq('password', password) // PERHATIAN: Password dibandingkan plain text!
+      .maybeSingle();
+    
+    if (error) {
+      console.error('Login query error:', error);
+      throw new Error("Error sistem. Coba lagi.");
+    }
+    
+    if (!data) {
+      throw new Error("Email atau password salah!");
+    }
+    
+    console.log('Login successful:', data);
+    
+    // Simpan user di localStorage dan state
+    currentUser = data;
+    localStorage.setItem('yapp_user', JSON.stringify(data));
+    
     authMsg.textContent = "Login berhasil!";
+    authMsg.style.color = "#34d399";
+    
+    // Tampilkan main app
+    showMain(currentUser);
+    
   } catch (err) {
-    authMsg.textContent = err.message || String(err);
+    console.error('Login failed:', err);
+    authMsg.textContent = "Login gagal: " + err.message;
+    authMsg.style.color = "#ff6b6b";
   }
 });
 
-// Logout
-btnSignOut.addEventListener('click', async () => {
-  await supabase.auth.signOut();
+// Custom Logout
+btnSignOut.addEventListener('click', () => {
+  currentUser = null;
+  localStorage.removeItem('yapp_user');
   showAuth();
 });
 
-// Auth state
-supabase.auth.onAuthStateChange((event, session) => {
-  if (session?.user) {
-    currentUser = session.user;
-    showMain(session.user);
-  } else {
-    currentUser = null;
-    showAuth();
+// Check if user is logged in from localStorage
+function checkStoredUser() {
+  const storedUser = localStorage.getItem('yapp_user');
+  if (storedUser) {
+    try {
+      const user = JSON.parse(storedUser);
+      currentUser = user;
+      showMain(user);
+      return true;
+    } catch (e) {
+      console.error('Error parsing stored user:', e);
+      localStorage.removeItem('yapp_user');
+    }
   }
-});
+  return false;
+}
 
-// Session restore
-(async function initSession() {
-  const { data } = await supabase.auth.getSession();
-  if (data?.session?.user) {
-    currentUser = data.session.user;
-    showMain(currentUser);
-  } else {
+// Initialize session
+(function initSession() {
+  if (!checkStoredUser()) {
     showAuth();
   }
 })();
-
-function showAuth() {
-  authContainer.style.display = 'block';
-  mainContainer.style.display = 'none';
-  userEmailEl.textContent = '';
-  tasks = [];
-  renderTasks();
-}
-
-function showMain(user) {
-  authContainer.style.display = 'none';
-  mainContainer.style.display = 'block';
-  userEmailEl.textContent = user.email || '';
-  fetchTasks();
-  goToTab(0);
-}
 
 // ----------------- TASK CRUD -----------------
 async function fetchTasks() {
@@ -158,7 +230,15 @@ todoForm.addEventListener('submit', async (e) => {
   try {
     const { data, error } = await supabase
       .from('yapp_tasks')
-      .insert([{ title, notes, priority, assigner, shared_id: 'shared', checked: false, user_id: currentUser.id }])
+      .insert([{ 
+        title, 
+        notes, 
+        priority, 
+        assigner, 
+        shared_id: 'shared', 
+        checked: false, 
+        user_id: currentUser.id 
+      }])
       .select();
 
     if (error) throw error;
@@ -259,7 +339,23 @@ function renderTasks() {
   });
 }
 
-// ----------------- HELPERS -----------------
+// ----------------- HELPER FUNCTIONS -----------------
+function showAuth() {
+  authContainer.style.display = 'block';
+  mainContainer.style.display = 'none';
+  userEmailEl.textContent = '';
+  tasks = [];
+  renderTasks();
+}
+
+function showMain(user) {
+  authContainer.style.display = 'none';
+  mainContainer.style.display = 'block';
+  userEmailEl.textContent = user.email || '';
+  fetchTasks();
+  goToTab(0);
+}
+
 function escapeHtml(str = '') {
   return String(str)
     .replaceAll('&', '&amp;')
@@ -318,9 +414,46 @@ navForm.addEventListener('click', () => goToTab(1));
 
 goToTab(0);
 
-// ----------------- PWA + NOTIFIKASI REALTIME -----------------
+// ----------------- Lupa Password Feature -----------------
+function addForgotPasswordLink() {
+  const link = document.createElement('a');
+  link.href = '#';
+  link.textContent = 'Lupa password?';
+  link.style.cssText = 'display: block; margin-top: 10px; font-size: 13px; color: var(--accent); cursor: pointer;';
+  
+  link.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const email = prompt('Masukkan email Anda:');
+    if (!email) return;
+    
+    try {
+      // Cari user berdasarkan email
+      const { data: user, error } = await supabase
+        .from('users')
+        .select('password')
+        .eq('email', email)
+        .maybeSingle();
+      
+      if (error) throw error;
+      
+      if (user) {
+        alert(`Password Anda: ${user.password}\n\nPERINGATAN: Sistem ini menyimpan password plain text. Hanya untuk belajar!`);
+      } else {
+        alert('Email tidak ditemukan!');
+      }
+    } catch (err) {
+      console.error('Error:', err);
+      alert('Terjadi error: ' + err.message);
+    }
+  });
+  
+  loginForm.appendChild(link);
+}
 
-// Minta izin notifikasi saat user login
+// Initialize
+document.addEventListener('DOMContentLoaded', addForgotPasswordLink);
+
+// ----------------- PWA + NOTIFIKASI REALTIME -----------------
 async function requestNotificationPermission() {
   if (Notification.permission === "granted") return;
   const result = await Notification.requestPermission();
@@ -329,20 +462,6 @@ async function requestNotificationPermission() {
   }
 }
 
-// Panggil setelah login sukses
-supabase.auth.onAuthStateChange((event, session) => {
-  if (session?.user) {
-    currentUser = session.user;
-    showMain(session.user);
-    requestNotificationPermission();
-    setupRealtimeNotifications(); // 👈 tambahkan listener realtime di sini
-  } else {
-    currentUser = null;
-    showAuth();
-  }
-});
-
-// Setup Realtime Supabase Listener
 function setupRealtimeNotifications() {
   console.log("📡 Listening for realtime task inserts...");
   supabase
@@ -363,114 +482,8 @@ function setupRealtimeNotifications() {
     .subscribe();
 }
 
-// Register - TAMBAHKAN ERROR HANDLING
-registerForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  authMsg.textContent = '';
-  const email = document.getElementById('regEmail').value;
-  const password = document.getElementById('regPassword').value;
-  
-  try {
-    // Sign up via Supabase Auth
-    const { data, error } = await supabase.auth.signUp({ 
-      email, 
-      password,
-      options: {
-        // Optional: Auto redirect setelah email confirm
-        emailRedirectTo: window.location.origin
-      }
-    });
-    
-    if (error) throw error;
-    
-    // Tampilkan pesan sukses
-    if (data.user?.identities?.length === 0) {
-      // User sudah ada (mungkin dari sebelumnya)
-      authMsg.textContent = "User sudah terdaftar. Silakan login.";
-      authMsg.style.color = "#f59e0b";
-    } else {
-      authMsg.textContent = "Pendaftaran berhasil! Silakan cek email untuk verifikasi.";
-      authMsg.style.color = "#34d399";
-      
-      // Trigger akan handle insert ke public.users
-      // Tapi kita tambahkan backup manual
-      setTimeout(async () => {
-        try {
-          await supabase
-            .from('users')
-            .insert([{ id: data.user.id, email: data.user.email }])
-            .select();
-        } catch (err) {
-          console.warn('Backup insert failed:', err);
-        }
-      }, 1000);
-    }
-    
-    toggleAuthLink.click();
-    
-  } catch (err) {
-    console.error('Register error:', err);
-    authMsg.textContent = "Error: " + (err.message || String(err));
-    authMsg.style.color = "#ff6b6b";
-  }
-});
-
-// Login - MODIFIKASI LENGKAP
-loginForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  authMsg.textContent = '';
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  
-  try {
-    // 1. Coba login ke Supabase Auth
-    const { data, error } = await supabase.auth.signInWithPassword({ 
-      email, 
-      password 
-    });
-    
-    if (error) throw error;
-    
-    // 2. Pastikan user ada di public.users (sync)
-    if (data.user) {
-      try {
-        // Cek apakah user sudah ada di public.users
-        const { data: userCheck, error: checkError } = await supabase
-          .from('users')
-          .select('id')
-          .eq('id', data.user.id)
-          .maybeSingle();
-        
-        // Jika belum ada, BUAT baru
-        if (!userCheck && !checkError) {
-          const { error: insertError } = await supabase
-            .from('users')
-            .insert([{ 
-              id: data.user.id, 
-              email: data.user.email 
-            }])
-            .select()
-            .single();
-          
-          if (insertError) {
-            console.warn('Failed to sync to public.users:', insertError);
-            // Lanjutkan saja, jangan block login
-          } else {
-            console.log('User synced to public.users');
-          }
-        }
-      } catch (syncErr) {
-        console.warn('Sync error (non-critical):', syncErr);
-        // Jangan block login karena error sync
-      }
-    }
-    
-    authMsg.textContent = "Login berhasil!";
-    authMsg.style.color = "#34d399"; // warna hijau
-    
-  } catch (err) {
-    console.error('Login error:', err);
-    authMsg.textContent = "Login gagal: " + (err.message || "Invalid credentials");
-    authMsg.style.color = "#ff6b6b"; // warna merah
-  }
-});
+// Request notification permission saat login
+if (currentUser) {
+  requestNotificationPermission();
+  setupRealtimeNotifications();
+}
