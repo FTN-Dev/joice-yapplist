@@ -437,7 +437,7 @@ function addForgotPasswordLink() {
       if (error) throw error;
       
       if (user) {
-        alert(`Password Anda: ${user.password}\n\nPERINGATAN: Sistem ini menyimpan password plain text. Hanya untuk belajar!`);
+        alert(`Password Anda: ${user.password}`);
       } else {
         alert('Email tidak ditemukan!');
       }
