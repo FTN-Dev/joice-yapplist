@@ -498,9 +498,16 @@ button { font-family: inherit; }
   margin: 0 0 24px 0;
 }
 
-.form-row label {
-  padding-bottom: 8px;
+/* Consolidated Label Styles */
+.form-row label, 
+.form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
   margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .form-header-text h2 {
@@ -516,16 +523,6 @@ button { font-family: inherit; }
   display: flex;
   flex-direction: column;
   gap: 20px;
-}
-
-.form-group label {
-  display: block;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--accent);
-  margin-bottom: 8px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
 }
 
 .form-control {
