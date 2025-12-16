@@ -158,7 +158,7 @@ todoForm.addEventListener('submit', async (e) => {
   try {
     const { data, error } = await supabase
       .from('yapp_tasks')
-      .insert([{ title, notes, priority, assigner, shared_id: 'shared', checked: false }])
+      .insert([{ title, notes, priority, assigner, shared_id: 'shared', checked: false, user_id: currentUser.id }])
       .select();
 
     if (error) throw error;
