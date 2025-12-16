@@ -121,6 +121,7 @@ button { font-family: inherit; }
 /* === AUTH SCREEN === */
 #authContainer {
   justify-content: center; /* Enforces vertical centering in column mode */
+  align-items: center;
 }
 
 .auth-wrap {
